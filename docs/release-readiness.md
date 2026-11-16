@@ -1,8 +1,8 @@
 # Release readiness
 
-Status: source-verifiable durable local retention ledger profile preparing for
-public GitHub source distribution; not ready for a network service, registry
-publication or production deployment.
+Status: source-verifiable durable local retention ledger profile published
+through the qualified GitHub source channel; not ready for a network service,
+registry publication or production deployment.
 
 Established evidence is recorded in `docs/traceability.md`. Repository license
 texts, exact license-declaration baselines and digest-pinned empty/live checkpoint

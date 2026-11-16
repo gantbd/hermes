@@ -2,7 +2,9 @@
   "schema": 1,
   "channel": "github-coordinated-source",
   "hermesRepository": "https://github.com/gantbd/hermes",
-  "remoteReachabilityQualified": false,
+  "remoteReachabilityQualified": true,
+  "qualificationRevision": "3f60c1c7b00b1a61230508b11422ddfc84b61856",
+  "qualificationRun": "https://github.com/gantbd/hermes/actions/runs/43971994953",
   "keystone": {
     "repository": "https://github.com/gantbd/keystone",
     "revision": "2e4faf10ec0a70805aa1db1555f93c77fcf0a1e4",

@@ -14,7 +14,8 @@ rg -q 'not ready' docs/release-readiness.md || { echo 'Hermes readiness refusal 
 rg -q '"channel": "github-coordinated-source"' release/github-source.json || { echo 'Hermes GitHub source channel missing' >&2; exit 1; }
 rg -q '"revision": "2e4faf10ec0a70805aa1db1555f93c77fcf0a1e4"' release/github-source.json || { echo 'Hermes Keystone source revision drifted' >&2; exit 1; }
 rg -q '"revision": "b272106cf6d0093839a7d696c829bf8a408b0306"' release/github-source.json || { echo 'Hermes Aegis source revision drifted' >&2; exit 1; }
-rg -q '"remoteReachabilityQualified": false' release/github-source.json || { echo 'Hermes source profile claims unverified reachability' >&2; exit 1; }
+rg -q '"remoteReachabilityQualified": true' release/github-source.json || { echo 'Hermes source reachability is not qualified' >&2; exit 1; }
+rg -q '"qualificationRevision": "3f60c1c7b00b1a61230508b11422ddfc84b61856"' release/github-source.json || { echo 'Hermes source qualification revision drifted' >&2; exit 1; }
 rg -q '^performance:' Makefile || { echo 'Hermes performance gate missing' >&2; exit 1; }
 rg -q '^soak-process:' Makefile || { echo 'Hermes process soak gate missing' >&2; exit 1; }
 rg -q '^check-peer-profiles:' Makefile || { echo 'Hermes peer-process gate missing' >&2; exit 1; }

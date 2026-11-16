@@ -1,6 +1,7 @@
 # Release and distribution policy
 
-Status: coordinated GitHub source distribution is being qualified; no registry or binary
+Status: coordinated GitHub source distribution is qualified at the exact
+revision recorded in `release/github-source.json`; no registry or binary
 publication is authorized.
 
 Every Hermes package sets `publish = false`. The current checkout depends on the
