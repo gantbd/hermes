@@ -29,6 +29,8 @@ jobs:
           persist-credentials: false
       - name: Install pinned Rust toolchain
         run: rustup toolchain install 1.95.0 --profile minimal --component clippy,rustfmt
+      - name: Install gate prerequisites
+        run: brew install ripgrep
       - name: Run deterministic service soak
         working-directory: hermes
         run: make soak
