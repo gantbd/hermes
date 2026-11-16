@@ -95,6 +95,9 @@ Exit: H5 gap visibility is satisfied by executable model and recovery evidence.
   replay after reopen and explicit replay-history loss after compaction.
 - [x] Add content-safe backlog, retained-edge, stalled-cursor, byte-residence,
   commit-time and saturation observations.
+- [x] Own disclosure, acknowledgement and compaction command guards beside the
+  public client. Presentation and Workbench reuse them without redefining
+  confirmation, stale-state or uncertainty semantics.
 
 Exit: embedded and local-daemon clients pass the same append/read/ack/gap suite.
 

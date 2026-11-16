@@ -48,6 +48,10 @@ authorization port before every durable-host operation; producer and consumer ID
 remain correlation only. `hermes-client` supplies disjoint append, consumer,
 compaction and observation facades. A durable reopen test proves exact append
 replay, session loss, retained gaps and replay-history loss across this boundary.
+`hermes-disclosure-command`, `hermes-consumer-command`, and
+`hermes-operator-command` own the exact-confirmation/current-state guards used
+by standalone and Workbench shells. Presentation does not own disclosure,
+acknowledgement, or compaction semantics.
 `hermes-wire` carries every command, outcome and refusal in a canonical bounded
 frame and validates event counts and payload lengths before allocation.
 `hermes-local-daemon` adds a private mode-`0600` Unix connection profile with one

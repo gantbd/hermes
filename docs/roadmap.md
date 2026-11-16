@@ -66,8 +66,11 @@
   process exit.
 - [Partial] Provide a separate Hermes CLI/application composition root. The
   read-only durable daemon is now owner-supplied; the sibling presentation CLI
-  supplies observation and exact-confirmed bounded disclosure. Guarded append,
-  acknowledge and compact workflows remain open.
+  supplies observation and invokes Hermes-owned exact-confirmed bounded
+  disclosure, acknowledgement and compaction guards. Guarded append remains a
+  producer-specific integration concern.
+- [Implemented] Keep disclosure, consumer and operator guards under Hermes
+  ownership; presentation packages contain no ledger command semantics.
 - Let Workbench reuse the same TUI and optionally host Hermes's service runtime
   beneath one executable and lifecycle. Hermes retains ledger, cursor,
   compaction, retention, authorization, and uncertainty authority. Normal

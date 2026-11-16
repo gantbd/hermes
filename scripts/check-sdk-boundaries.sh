@@ -38,6 +38,20 @@ fi
 
 echo 'Hermes conformance suite public-protocol dependency closure verified'
 
+for command in hermes-consumer-command hermes-disclosure-command hermes-operator-command; do
+  command_tree=$(cargo tree -p "$command" --edges normal --depth 1 --locked --offline)
+  if [[ $(printf '%s\n' "$command_tree" | wc -l | tr -d ' ') != 3 ]] \
+    || ! printf '%s\n' "$command_tree" | rg -q 'hermes-client' \
+    || ! printf '%s\n' "$command_tree" | rg -q 'hermes-protocol' \
+    || printf '%s\n' "$command_tree" | rg -q 'hermes-(ledger|host|service|wire|local)|keystone|ratatui|crossterm'; then
+    printf '%s\n' "$command_tree" >&2
+    echo "$command escaped its public-client closure" >&2
+    exit 1
+  fi
+done
+
+echo 'Hermes command guards public-client closure verified'
+
 peer=$(cargo tree -p hermes-unix-peer --edges normal --depth 1 --locked --offline)
 if [[ $(printf '%s\n' "$peer" | wc -l | tr -d ' ') != 4 ]] \
   || ! printf '%s\n' "$peer" | rg -q 'hermes-local-daemon' \

@@ -8,12 +8,15 @@ component|bitflags|2.13.2
 component|errno|0.3.14
 component|hermes-aegis|0.1.0
 component|hermes-client|0.1.0
+component|hermes-consumer-command|0.1.0
 component|hermes-conformance|0.1.0
 component|hermes-daemon|0.1.0
+component|hermes-disclosure-command|0.1.0
 component|hermes-host|0.0.1
 component|hermes-ledger|0.0.1
 component|hermes-local|0.0.1
 component|hermes-local-daemon|0.1.0
+component|hermes-operator-command|0.1.0
 component|hermes-protocol|0.1.0
 component|hermes-sdk-embedded|0.1.0
 component|hermes-service|0.1.0
