@@ -1,6 +1,11 @@
 # Requirements
 
-Status: proposed. Nothing here is a durability claim.
+Status: selected V1 contract. Requirement-level implementation status is tracked
+in `docs/traceability.md`; the retention-aware volatile core, exclusive local
+durable profile and authenticated in-process service boundary are implemented.
+The Moira producer additionally qualifies discarded-reply replay across actual
+Hermes process exit and durable reopen using only public client/wire contracts.
+This document alone is not a durability or deployment claim.
 
 - **H1 — Ordered streams:** append succeeds only at the exact expected predecessor.
 - **H2 — Opaque meaning:** Hermes validates envelope framing and bounds, not domain
@@ -18,7 +23,18 @@ Status: proposed. Nothing here is a durability claim.
 - **H8 — Canonical records:** persisted records are versioned, deterministic, and
   decode under declared byte/work limits.
 - **H9 — Effect isolation:** the core is deterministic; store adapters own I/O.
+- **H10 — Content-safe operation:** service observations expose only bounded
+  aggregate edges, backlog, operation/commit timing, capacity and saturation;
+  they never expose payloads, subjects, producer keys or consumer identities.
+- **H11 — Portable delivery evidence:** peer adapters can run the same public
+  protocol inbox/outbox contract for outcome-unknown dispatch, exact replay,
+  conflict, restart, independent cursors, acknowledgement and truthful gaps
+  without depending on Hermes internals.
 
-Open: compaction profiles, cryptographic integrity, replication, multi-stream
-transactions, access control, durable adapter selection, and product SLOs.
+The selected private local Unix profile binds kernel effective UID/GID pairs to
+bounded Hermes subjects. Open: remote credential binding, retention policy automation, cryptographic
+integrity, replication, multi-stream transactions, the remaining peer profile,
+additional durable adapters, and product SLOs.
+The first selected adapter is the exclusive private local Unix directory profile;
+its tested process/recovery contract is not physical power-loss certification.
 

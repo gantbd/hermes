@@ -12,6 +12,23 @@ path = "src/lib.rs"
 
 [dependencies]
 
+[workspace]
+members = [
+  ".",
+  "host/hermes-host",
+  "adapters/hermes-local",
+  "adapters/hermes-unix-peer",
+  "adapters/hermes-aegis",
+  "crates/hermes-client",
+  "crates/hermes-conformance",
+  "crates/hermes-local-daemon",
+  "crates/hermes-protocol",
+  "crates/hermes-service",
+  "crates/hermes-wire",
+  "sdk/embedded",
+]
+resolver = "3"
+
 [lints.rust]
 unsafe_code = "forbid"
 

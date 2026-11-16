@@ -1,0 +1,18 @@
+[package]
+name = "hermes-sdk-embedded"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.95"
+description = "Zero-authority embedded SDK facade for Hermes"
+license = "MIT OR Apache-2.0"
+publish = false
+
+[dependencies]
+hermes-host = { path = "../../host/hermes-host", version = "=0.0.1" }
+hermes-ledger = { path = "../..", version = "=0.0.1" }
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+all = "warn"

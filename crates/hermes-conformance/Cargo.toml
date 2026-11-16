@@ -1,0 +1,17 @@
+[package]
+name = "hermes-conformance"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.95"
+license = "MIT OR Apache-2.0"
+description = "Reusable public-contract conformance suites for Hermes inbox and outbox adapters"
+publish = false
+
+[dependencies]
+hermes-protocol = { path = "../hermes-protocol", version = "=0.1.0" }
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+all = "warn"

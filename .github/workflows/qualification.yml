@@ -1,0 +1,37 @@
+name: Opt-in qualification
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: qualification-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  soak-and-performance:
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - name: Check out Hermes
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          path: hermes
+      - name: Check out Keystone dependency
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: gantbd/keystone
+          path: keystone
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --component clippy,rustfmt
+      - name: Run deterministic service soak
+        working-directory: hermes
+        run: make soak
+      - name: Run durable process soak
+        working-directory: hermes
+        run: make soak-process
+      - name: Run optimized performance gate
+        working-directory: hermes
+        run: make performance

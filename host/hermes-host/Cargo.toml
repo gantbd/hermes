@@ -1,0 +1,19 @@
+[package]
+name = "hermes-host"
+version = "0.0.1"
+edition = "2024"
+rust-version = "1.95"
+license = "MIT OR Apache-2.0"
+publish = false
+description = "Persistence-gated trusted in-process Hermes host"
+
+[dependencies]
+hermes-ledger = { path = "../..", version = "=0.0.1" }
+keystone-observe = { path = "../../../keystone/crates/keystone-observe", version = "=0.0.1" }
+keystone-storage = { path = "../../../keystone/crates/keystone-storage", version = "=0.0.1" }
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+all = "warn"

@@ -1,0 +1,18 @@
+# Exact package inventory and digest-pinned current V1/V2 fixtures.
+package|Cargo.toml|hermes-ledger|0.0.1
+package|adapters/hermes-aegis/Cargo.toml|hermes-aegis|0.1.0
+package|adapters/hermes-local/Cargo.toml|hermes-local|0.0.1
+package|adapters/hermes-unix-peer/Cargo.toml|hermes-unix-peer|0.1.0
+package|crates/hermes-client/Cargo.toml|hermes-client|0.1.0
+package|crates/hermes-conformance/Cargo.toml|hermes-conformance|0.1.0
+package|crates/hermes-local-daemon/Cargo.toml|hermes-local-daemon|0.1.0
+package|crates/hermes-protocol/Cargo.toml|hermes-protocol|0.1.0
+package|crates/hermes-service/Cargo.toml|hermes-service|0.1.0
+package|crates/hermes-wire/Cargo.toml|hermes-wire|0.1.0
+package|host/hermes-host/Cargo.toml|hermes-host|0.0.1
+package|qualification/aegis-process-authorization/Cargo.toml|hermes-qualification-aegis-process|0.0.1
+package|sdk/embedded/Cargo.toml|hermes-sdk-embedded|0.1.0
+fixture|tests/fixtures/checkpoint-v1-empty.hex|198dfe0b6c6244f860a99df2056f05e648e6301fcc0168a81bca843b42cff1fa
+fixture|tests/fixtures/checkpoint-v2-empty.hex|bd8cb4dd4881c313bdfbcf9a3f3b1c398b22a66c917efdfa6f532a52419c8534
+fixture|tests/fixtures/checkpoint-v2-live.hex|1c43eee79f71f00edc24ff6fa2633d4f1538fbd4df8be51d1acbdf0d616e8477
+

@@ -108,3 +108,31 @@ fn bounds_refuse_before_publication_and_debug_redacts_payload() {
         Err(RefusalV1::UnknownStream)
     );
 }
+
+#[test]
+fn stream_observation_reports_edges_and_aggregate_backlog_without_identities() {
+    let mut engine = Engine::try_new(Limits::default()).unwrap();
+    let stream = StreamId::new([5; 16]);
+    engine.append(stream, None, envelope(6, b"zero")).unwrap();
+    engine
+        .append(stream, Some(EventSequence(0)), envelope(7, b"one"))
+        .unwrap();
+    engine
+        .append(stream, Some(EventSequence(1)), envelope(8, b"two"))
+        .unwrap();
+    engine
+        .acknowledge(ConsumerId::new([9; 16]), stream, EventSequence(0))
+        .unwrap();
+    engine
+        .acknowledge(ConsumerId::new([10; 16]), stream, EventSequence(2))
+        .unwrap();
+
+    let observation = engine.stream_observation(stream).unwrap();
+    assert_eq!(observation.retained_from, EventSequence(0));
+    assert_eq!(observation.published_edge, Some(EventSequence(2)));
+    assert_eq!(observation.retained_events, 3);
+    assert_eq!(observation.consumer_count, 2);
+    assert_eq!(observation.stalled_consumers, 1);
+    assert_eq!(observation.max_consumer_backlog, 2);
+    assert_eq!(engine.stream_observation(StreamId::new([11; 16])), None);
+}

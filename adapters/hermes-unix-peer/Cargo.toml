@@ -1,0 +1,23 @@
+[package]
+name = "hermes-unix-peer"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.95"
+license = "MIT OR Apache-2.0"
+description = "OS peer-credential authentication adapter for the Hermes local daemon"
+publish = false
+
+[dependencies]
+hermes-local-daemon = { path = "../../crates/hermes-local-daemon", version = "=0.1.0" }
+hermes-service = { path = "../../crates/hermes-service", version = "=0.1.0" }
+nix = { version = "=0.29.0", default-features = false, features = ["socket", "user"] }
+
+[dev-dependencies]
+hermes-protocol = { path = "../../crates/hermes-protocol", version = "=0.1.0" }
+hermes-wire = { path = "../../crates/hermes-wire", version = "=0.1.0" }
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+all = "warn"
