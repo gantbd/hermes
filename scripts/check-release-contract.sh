@@ -13,7 +13,7 @@ rg -q 'no registry or binary' docs/release-policy.md || { echo 'Hermes distribut
 rg -q 'not ready' docs/release-readiness.md || { echo 'Hermes readiness refusal missing' >&2; exit 1; }
 rg -q '"channel": "github-coordinated-source"' release/github-source.json || { echo 'Hermes GitHub source channel missing' >&2; exit 1; }
 rg -q '"revision": "2e4faf10ec0a70805aa1db1555f93c77fcf0a1e4"' release/github-source.json || { echo 'Hermes Keystone source revision drifted' >&2; exit 1; }
-rg -q '"revision": "ab5ea9d2af1027656958d9c3429d01b5291c1084"' release/github-source.json || { echo 'Hermes Aegis source revision drifted' >&2; exit 1; }
+rg -q '"revision": "b272106cf6d0093839a7d696c829bf8a408b0306"' release/github-source.json || { echo 'Hermes Aegis source revision drifted' >&2; exit 1; }
 rg -q '"remoteReachabilityQualified": false' release/github-source.json || { echo 'Hermes source profile claims unverified reachability' >&2; exit 1; }
 rg -q '^performance:' Makefile || { echo 'Hermes performance gate missing' >&2; exit 1; }
 rg -q '^soak-process:' Makefile || { echo 'Hermes process soak gate missing' >&2; exit 1; }

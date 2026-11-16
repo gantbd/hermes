@@ -10,7 +10,7 @@
   },
   "aegis": {
     "repository": "https://github.com/gantbd/aegis",
-    "revision": "ab5ea9d2af1027656958d9c3429d01b5291c1084",
+    "revision": "b272106cf6d0093839a7d696c829bf8a408b0306",
     "relativePath": "../aegis"
   },
   "publishing": {

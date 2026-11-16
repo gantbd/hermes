@@ -33,7 +33,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: gantbd/aegis
-          ref: ab5ea9d2af1027656958d9c3429d01b5291c1084
+          ref: b272106cf6d0093839a7d696c829bf8a408b0306
           path: aegis
           persist-credentials: false
       - name: Install pinned Rust toolchain
