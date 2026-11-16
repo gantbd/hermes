@@ -89,8 +89,9 @@ Exit: H5 gap visibility is satisfied by executable model and recovery evidence.
       `Submit` allowance and wrong-action denial through public daemon traffic.
   - [x] Exact bounded effective UID/GID-to-subject adapter for the connected Unix
     peer, with unknown peers refused before session creation or command dispatch.
-- [x] Add private local transport and daemon with bounded frames, deadlines,
-  lifetime ownership, health/readiness and truthful transmission uncertainty.
+- [x] Add private local transport and selected observer/operator daemon with
+  bounded frames, deadlines, lifetime ownership, health/readiness, exact-stream
+  acknowledgement/compaction authority and truthful transmission uncertainty.
 - [x] Preserve embedded/remote append/read/ack/compact/gap parity, exact append
   replay after reopen and explicit replay-history loss after compaction.
 - [x] Add content-safe backlog, retained-edge, stalled-cursor, byte-residence,

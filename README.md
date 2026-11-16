@@ -73,12 +73,14 @@ aggregate retained/publication edges, stalled-cursor backlog, fixed operation
 residence, commit/checkpoint residence, confirmed usage and saturation without
 exporting payloads or identities.
 
-`applications/hermes-daemon` is the standalone read-only composition root. It
-uses the same wire service and OS-peer adapter, requires explicit create versus
-recover mode and one exact UID/GID-to-subject mapping, and grants only read and
-observation. Signal shutdown wakes the accept loop without creating a session or
-dispatching work. Mutation-capable deployments must supply a different explicit
-authorization composition rather than elevating this binary.
+`applications/hermes-daemon` is the standalone selected local composition root.
+It uses the same wire service and OS-peer adapter, requires explicit create
+versus recover mode and one exact UID/GID-to-subject mapping, and selects either
+an `observer` profile or an `operator` profile bound to one exact stream. The
+observer grants read and observation. The operator grants read, observation,
+acknowledgement and compaction only for its selected stream; append remains
+denied and producer-owned. Signal shutdown wakes the accept loop without
+creating a session or dispatching work.
 
 See [requirements](requirements.md), [specification](specification.md), and the
 [focused roadmap](docs/roadmap.md). The staged production program is tracked in

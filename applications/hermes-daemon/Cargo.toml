@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 rust-version = "1.95"
 license = "MIT OR Apache-2.0"
-description = "Read-only private Unix service application for Hermes"
+description = "Explicit observer/operator private Unix service application for Hermes"
 publish = false
 
 [[bin]]
@@ -16,13 +16,13 @@ doc = false
 hermes-ledger = { path = "../..", version = "=0.0.1" }
 hermes-local = { path = "../../adapters/hermes-local", version = "=0.0.1" }
 hermes-local-daemon = { path = "../../crates/hermes-local-daemon", version = "=0.1.0" }
+hermes-protocol = { path = "../../crates/hermes-protocol", version = "=0.1.0" }
 hermes-service = { path = "../../crates/hermes-service", version = "=0.1.0" }
 hermes-unix-peer = { path = "../../adapters/hermes-unix-peer", version = "=0.1.0" }
 hermes-wire = { path = "../../crates/hermes-wire", version = "=0.1.0" }
 signal-hook = { version = "=0.3.18", default-features = false, features = ["iterator"] }
 
 [dev-dependencies]
-hermes-protocol = { path = "../../crates/hermes-protocol", version = "=0.1.0" }
 nix = { version = "=0.29.0", default-features = false, features = ["signal", "user"] }
 
 [lints.rust]

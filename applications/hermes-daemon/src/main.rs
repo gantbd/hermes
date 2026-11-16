@@ -4,6 +4,7 @@
 mod unix {
     use hermes_ledger::{Limits, persistence::CheckpointBudgetV1};
     use hermes_local_daemon::{ConnectionErrorV1, unix::DaemonErrorV1};
+    use hermes_protocol::StreamIdV1;
     use hermes_service::{
         AuthorizationActionV1, AuthorizationResourceV1, Authorizer, Service, ServiceLimitsV1,
     };
@@ -40,6 +41,13 @@ mod unix {
         effective_uid: u32,
         effective_gid: u32,
         subject: [u8; 16],
+        access: AccessProfile,
+    }
+
+    #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+    enum AccessProfile {
+        Observer,
+        Operator(StreamIdV1),
     }
 
     impl Config {
@@ -58,6 +66,17 @@ mod unix {
             let effective_uid = parse_u32(values.next(), "EFFECTIVE_UID required")?;
             let effective_gid = parse_u32(values.next(), "EFFECTIVE_GID required")?;
             let subject = parse_subject(values.next().ok_or("SUBJECT_HEX required")?)?;
+            let access = match values
+                .next()
+                .and_then(|value| value.into_string().ok())
+                .as_deref()
+            {
+                Some("observer") => AccessProfile::Observer,
+                Some("operator") => AccessProfile::Operator(StreamIdV1(parse_identifier(
+                    values.next().ok_or("OPERATOR_STREAM_HEX required")?,
+                )?)),
+                _ => return Err("ACCESS must be observer or operator"),
+            };
             if values.next().is_some() {
                 return Err("unexpected argument");
             }
@@ -68,6 +87,7 @@ mod unix {
                 effective_uid,
                 effective_gid,
                 subject,
+                access,
             })
         }
     }
@@ -89,15 +109,19 @@ mod unix {
     }
 
     fn parse_subject(value: OsString) -> Result<[u8; 16], &'static str> {
+        parse_identifier(value)
+    }
+
+    fn parse_identifier(value: OsString) -> Result<[u8; 16], &'static str> {
         let value = value
             .into_string()
-            .map_err(|_| "subject must be UTF-8 lowercase hexadecimal")?;
+            .map_err(|_| "identifier must be UTF-8 lowercase hexadecimal")?;
         if value.len() != 32
             || !value
                 .bytes()
                 .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
         {
-            return Err("subject must be exactly 32 lowercase hexadecimal digits");
+            return Err("identifier must be exactly 32 lowercase hexadecimal digits");
         }
         let mut subject = [0_u8; 16];
         for (index, pair) in value.as_bytes().chunks_exact(2).enumerate() {
@@ -110,28 +134,44 @@ mod unix {
         match value {
             b'0'..=b'9' => Ok(value - b'0'),
             b'a'..=b'f' => Ok(value - b'a' + 10),
-            _ => Err("subject must be lowercase hexadecimal"),
+            _ => Err("identifier must be lowercase hexadecimal"),
         }
     }
 
-    struct ReadOnlyPolicy {
+    struct SelectedPolicy {
         subject: [u8; 16],
+        access: AccessProfile,
     }
 
-    impl Authorizer for ReadOnlyPolicy {
+    impl Authorizer for SelectedPolicy {
         type Error = Infallible;
 
         fn authorize(
             &mut self,
             subject: [u8; 16],
             action: AuthorizationActionV1,
-            _: AuthorizationResourceV1,
+            resource: AuthorizationResourceV1,
         ) -> Result<bool, Self::Error> {
-            Ok(subject == self.subject
-                && matches!(
+            if subject != self.subject {
+                return Ok(false);
+            }
+            Ok(match self.access {
+                AccessProfile::Observer => matches!(
                     action,
                     AuthorizationActionV1::Read | AuthorizationActionV1::Observe
-                ))
+                ),
+                AccessProfile::Operator(selected) => match resource {
+                    AuthorizationResourceV1::Service => action == AuthorizationActionV1::Observe,
+                    AuthorizationResourceV1::Stream(stream) if stream == selected => matches!(
+                        action,
+                        AuthorizationActionV1::Read
+                            | AuthorizationActionV1::Acknowledge
+                            | AuthorizationActionV1::Compact
+                            | AuthorizationActionV1::Observe
+                    ),
+                    AuthorizationResourceV1::Stream(_) => false,
+                },
+            })
         }
     }
 
@@ -152,8 +192,9 @@ mod unix {
         .map_err(|error| format!("ledger startup refused: {error:?}"))?;
         let service = Service::new(
             ledger,
-            ReadOnlyPolicy {
+            SelectedPolicy {
                 subject: config.subject,
+                access: config.access,
             },
             ServiceLimitsV1::default(),
         )
@@ -190,13 +231,13 @@ mod unix {
                 }
             })?;
 
-        let result = serve_read_only(&mut daemon, &stop);
+        let result = serve(&mut daemon, &stop);
         signal_handle.close();
         let _ = signal_thread.join();
         result
     }
 
-    fn serve_read_only<P, A>(
+    fn serve<P, A>(
         daemon: &mut hermes_local_daemon::unix::Daemon<P, A>,
         stop: &AtomicBool,
     ) -> Result<(), Box<dyn Error>>
@@ -226,7 +267,7 @@ mod unix {
 
     fn usage(message: &'static str) -> String {
         format!(
-            "{message}; usage: hermes-daemon create|open DIRECTORY SOCKET EFFECTIVE_UID EFFECTIVE_GID SUBJECT_HEX"
+            "{message}; usage: hermes-daemon create|open DIRECTORY SOCKET EFFECTIVE_UID EFFECTIVE_GID SUBJECT_HEX observer|operator [OPERATOR_STREAM_HEX]"
         )
     }
 
@@ -244,6 +285,7 @@ mod unix {
                     "501",
                     "20",
                     "01010101010101010101010101010101",
+                    "observer",
                 ]
                 .into_iter()
                 .map(OsString::from),
@@ -251,6 +293,26 @@ mod unix {
             .unwrap();
             assert_eq!(config.mode, OpenMode::Create);
             assert_eq!(config.subject, [1; 16]);
+            assert_eq!(config.access, AccessProfile::Observer);
+            let operator = Config::parse(
+                [
+                    "open",
+                    "ledger",
+                    "hermes.sock",
+                    "501",
+                    "20",
+                    "01010101010101010101010101010101",
+                    "operator",
+                    "02020202020202020202020202020202",
+                ]
+                .into_iter()
+                .map(OsString::from),
+            )
+            .unwrap();
+            assert_eq!(
+                operator.access,
+                AccessProfile::Operator(StreamIdV1([2; 16]))
+            );
             for invalid in [
                 "0101",
                 "0101010101010101010101010101010A",
@@ -261,8 +323,11 @@ mod unix {
         }
 
         #[test]
-        fn policy_is_exact_subject_read_and_observe_only() {
-            let mut policy = ReadOnlyPolicy { subject: [7; 16] };
+        fn observer_policy_is_exact_subject_read_and_observe_only() {
+            let mut policy = SelectedPolicy {
+                subject: [7; 16],
+                access: AccessProfile::Observer,
+            };
             let resource = AuthorizationResourceV1::Service;
             assert!(
                 policy
@@ -282,6 +347,54 @@ mod unix {
             assert!(
                 !policy
                     .authorize([8; 16], AuthorizationActionV1::Read, resource)
+                    .unwrap()
+            );
+        }
+
+        #[test]
+        fn operator_policy_is_exact_subject_stream_and_closed_action_set() {
+            let selected = StreamIdV1([5; 16]);
+            let mut policy = SelectedPolicy {
+                subject: [7; 16],
+                access: AccessProfile::Operator(selected),
+            };
+            for action in [
+                AuthorizationActionV1::Read,
+                AuthorizationActionV1::Acknowledge,
+                AuthorizationActionV1::Compact,
+                AuthorizationActionV1::Observe,
+            ] {
+                assert!(
+                    policy
+                        .authorize([7; 16], action, AuthorizationResourceV1::Stream(selected),)
+                        .unwrap()
+                );
+            }
+            assert!(
+                !policy
+                    .authorize(
+                        [7; 16],
+                        AuthorizationActionV1::Append,
+                        AuthorizationResourceV1::Stream(selected),
+                    )
+                    .unwrap()
+            );
+            assert!(
+                !policy
+                    .authorize(
+                        [7; 16],
+                        AuthorizationActionV1::Compact,
+                        AuthorizationResourceV1::Stream(StreamIdV1([6; 16])),
+                    )
+                    .unwrap()
+            );
+            assert!(
+                policy
+                    .authorize(
+                        [7; 16],
+                        AuthorizationActionV1::Observe,
+                        AuthorizationResourceV1::Service,
+                    )
                     .unwrap()
             );
         }

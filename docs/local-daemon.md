@@ -1,8 +1,9 @@
 # Private local daemon profile
 
 Status: qualified bounded Unix append/read/ack/compact/gap profile with selected
-OS peer authentication and a read-only standalone application. External
-supervision and authority-bearing application profiles remain open.
+OS peer authentication and explicit observer/operator standalone application
+profiles. External supervision and producer-authority application profiles
+remain open.
 
 `hermes-local-daemon` binds only a new filesystem path, sets mode `0600` and
 refuses to replace an existing entry. The embedding launcher selects the trusted
@@ -29,15 +30,19 @@ mechanics only: storage create/recovery, peer mapping, authorization and limits
 remain deployment inputs.
 
 `hermes-daemon create|open DIRECTORY SOCKET EFFECTIVE_UID EFFECTIVE_GID
-SUBJECT_HEX` is the conservative standalone composition root. It explicitly
-creates or recovers the durable ledger, maps one configured OS peer identity to
-one subject, and grants only `Read` and `Observe`. `SIGINT`/`SIGTERM` set the
-owner stop flag and wake the blocked accept without authenticating or
-dispatching the wake connection. Its process gate proves create, read-only
-mutation refusal, clean shutdown, identity-guarded socket removal, reopen and
-observation through the ordinary wire protocol. Append, acknowledgment and
-compaction require a separately selected authorization composition; this binary
-never infers them from local process ownership.
+SUBJECT_HEX observer` and `hermes-daemon create|open DIRECTORY SOCKET
+EFFECTIVE_UID EFFECTIVE_GID SUBJECT_HEX operator OPERATOR_STREAM_HEX` are the
+conservative standalone composition roots. Both explicitly create or recover
+the durable ledger and map one configured OS peer identity to one subject. The
+observer grants only `Read` and `Observe`. The operator grants `Read`,
+`Observe`, `Acknowledge`, and `Compact` only for the exact selected stream;
+wrong-stream operations and all `Append` requests are denied. `SIGINT`/`SIGTERM`
+set the owner stop flag and wake the blocked accept without authenticating or
+dispatching the wake connection. The process gate proves observer create/reopen
+and mutation refusal plus selected-operator read, acknowledgement, compaction,
+wrong-stream denial, clean shutdown and identity-guarded socket removal through
+the ordinary wire protocol. The binary never infers authority from local
+process ownership, presentation selection, producer IDs or consumer IDs.
 
 Health exposes only readiness and saturated connection/outcome counters. Drop
 removes the socket only if device and inode still match the entry this daemon
