@@ -69,6 +69,13 @@ aggregate retained/publication edges, stalled-cursor backlog, fixed operation
 residence, commit/checkpoint residence, confirmed usage and saturation without
 exporting payloads or identities.
 
+`applications/hermes-daemon` is the standalone read-only composition root. It
+uses the same wire service and OS-peer adapter, requires explicit create versus
+recover mode and one exact UID/GID-to-subject mapping, and grants only read and
+observation. Signal shutdown wakes the accept loop without creating a session or
+dispatching work. Mutation-capable deployments must supply a different explicit
+authorization composition rather than elevating this binary.
+
 See [requirements](requirements.md), [specification](specification.md), and the
 [focused roadmap](docs/roadmap.md). The staged production program is tracked in
 [ROADMAP.production.md](ROADMAP.production.md); [SECURITY.md](SECURITY.md) and the

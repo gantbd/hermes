@@ -3,6 +3,7 @@ package|Cargo.toml|hermes-ledger|0.0.1
 package|adapters/hermes-aegis/Cargo.toml|hermes-aegis|0.1.0
 package|adapters/hermes-local/Cargo.toml|hermes-local|0.0.1
 package|adapters/hermes-unix-peer/Cargo.toml|hermes-unix-peer|0.1.0
+package|applications/hermes-daemon/Cargo.toml|hermes-daemon|0.1.0
 package|crates/hermes-client/Cargo.toml|hermes-client|0.1.0
 package|crates/hermes-conformance/Cargo.toml|hermes-conformance|0.1.0
 package|crates/hermes-local-daemon/Cargo.toml|hermes-local-daemon|0.1.0

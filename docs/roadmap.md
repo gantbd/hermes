@@ -37,6 +37,10 @@
 - [Implemented] Shutdown-aware embedded accept loop with an identity-free wake
   connection and owner-thread/socket cleanup qualification. Production shells
   still supply storage mode, peer mapping, authorization and limits.
+- [Implemented] Read-only `hermes-daemon` application with explicit
+  create-versus-recover mode, exact OS peer mapping, signal-driven drain and a
+  real process create/reopen qualification. Authority-bearing daemon profiles
+  remain separate deployment work.
 - [Qualified across independent service processes] Public-client Aegis
   authorization adapter with exact action/resource mapping, live grant issuance,
   append allowance and wrong-action denial through both public daemons.
@@ -60,8 +64,10 @@
   It owns bounded stream, cursor, backlog, gap, and confirmation projection, but
   no terminal lifecycle, argument parsing, daemon startup, global shortcuts, or
   process exit.
-- Provide a separate Hermes CLI/application composition root for the TUI and
-  bounded headless append, read, acknowledge, compact, and gap inspection.
+- [Partial] Provide a separate Hermes CLI/application composition root. The
+  read-only durable daemon is now owner-supplied; the sibling presentation CLI
+  supplies observation and exact-confirmed bounded disclosure. Guarded append,
+  acknowledge and compact workflows remain open.
 - Let Workbench reuse the same TUI and optionally host Hermes's service runtime
   beneath one executable and lifecycle. Hermes retains ledger, cursor,
   compaction, retention, authorization, and uncertainty authority. Normal

@@ -19,6 +19,7 @@ members = [
   "adapters/hermes-local",
   "adapters/hermes-unix-peer",
   "adapters/hermes-aegis",
+  "applications/hermes-daemon",
   "crates/hermes-client",
   "crates/hermes-conformance",
   "crates/hermes-local-daemon",

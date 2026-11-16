@@ -13,7 +13,7 @@ actual=$(shasum -a 256 "$lockfile" | awk '{print $1}')
 rg -q '^cargo-audit-version: 0\.23\.0$' "$attestation"
 rg -q '^advisory-database-commit: [0-9a-f]{40}$' "$attestation"
 rg -q '^audited-at-utc: [0-9]{4}-[0-9]{2}-[0-9]{2}T' "$attestation"
-rg -q '^dependency-count: 34$' "$attestation"
+rg -q '^dependency-count: 37$' "$attestation"
 rg -q '^vulnerability-count: 0$' "$attestation"
 rg -q '^warning-count: 0$' "$attestation"
-echo 'Hermes advisory attestation matches the exact 34-component root lockfile'
+echo 'Hermes advisory attestation matches the exact 37-component root lockfile'
