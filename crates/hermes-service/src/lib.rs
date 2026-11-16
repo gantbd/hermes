@@ -28,6 +28,7 @@ impl std::fmt::Debug for AuthenticatedSessionV1 {
 pub enum AuthorizationActionV1 {
     Append,
     Read,
+    ObserveCursor,
     Acknowledge,
     Compact,
     Observe,
@@ -236,8 +237,12 @@ fn authorization_scope(
             AuthorizationActionV1::Append,
             AuthorizationResourceV1::Stream(*stream),
         ),
-        protocol::CommandV1::Read { stream, .. } | protocol::CommandV1::Cursor { stream, .. } => (
+        protocol::CommandV1::Read { stream, .. } => (
             AuthorizationActionV1::Read,
+            AuthorizationResourceV1::Stream(*stream),
+        ),
+        protocol::CommandV1::Cursor { stream, .. } => (
+            AuthorizationActionV1::ObserveCursor,
             AuthorizationResourceV1::Stream(*stream),
         ),
         protocol::CommandV1::Acknowledge { stream, .. } => (

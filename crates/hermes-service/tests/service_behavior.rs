@@ -172,6 +172,18 @@ fn authorization_precedes_durable_work_and_gap_semantics_survive_reopen() {
     let session = reopened
         .open_session(AuthenticatedSessionV1 { subject: [1; 16] })
         .unwrap();
+    assert_eq!(
+        reopened
+            .execute(
+                session,
+                CommandV1::Cursor {
+                    consumer: ConsumerIdV1([10; 16]),
+                    stream,
+                },
+            )
+            .unwrap(),
+        ReplyV1::Accepted(OutcomeV1::Cursor(None))
+    );
     assert!(matches!(
         reopened
             .execute(
@@ -245,6 +257,10 @@ fn authorization_precedes_durable_work_and_gap_semantics_survive_reopen() {
     let (_, policy) = reopened.into_parts();
     assert!(policy.0.iter().any(|(_, action, resource)| {
         *action == AuthorizationActionV1::Observe
+            && *resource == AuthorizationResourceV1::Stream(stream)
+    }));
+    assert!(policy.0.iter().any(|(_, action, resource)| {
+        *action == AuthorizationActionV1::ObserveCursor
             && *resource == AuthorizationResourceV1::Stream(stream)
     }));
     assert!(policy.0.iter().any(|(_, action, resource)| {

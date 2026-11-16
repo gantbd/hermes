@@ -99,6 +99,7 @@ const fn action_v1(value: AuthorizationActionV1) -> ActionV1 {
     match value {
         AuthorizationActionV1::Append => ActionV1::Submit,
         AuthorizationActionV1::Read => ActionV1::Observe,
+        AuthorizationActionV1::ObserveCursor => ActionV1::Observe,
         AuthorizationActionV1::Acknowledge => ActionV1::Modify,
         AuthorizationActionV1::Compact => ActionV1::Administer,
         AuthorizationActionV1::Observe => ActionV1::Observe,

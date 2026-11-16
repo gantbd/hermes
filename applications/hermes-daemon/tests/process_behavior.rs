@@ -5,9 +5,9 @@ use hermes_ledger::{
     persistence::CheckpointBudgetV1,
 };
 use hermes_protocol::{
-    CommandV1, ConsumerIdV1, CorrelationIdV1, EventEnvelopeV1 as ProtocolEnvelopeV1,
-    EventSequenceV1, IdempotencyKeyV1, OutcomeV1, ProducerIdV1, RefusalV1, ReplyV1, SchemaIdV1,
-    StreamIdV1,
+    AppendOutcomeV1, CommandV1, ConsumerIdV1, CorrelationIdV1,
+    EventEnvelopeV1 as ProtocolEnvelopeV1, EventSequenceV1, IdempotencyKeyV1, OutcomeV1,
+    ProducerIdV1, RefusalV1, ReplyV1, SchemaIdV1, StreamIdV1,
 };
 use hermes_wire::{LimitsV1, decode_ready, decode_reply, encode_request};
 use nix::{
@@ -231,6 +231,106 @@ fn selected_operator_profile_acknowledges_and_compacts_only_its_exact_stream() {
     );
     drop(connection);
     stop(operator);
+    assert!(!socket.exists());
+    fs::remove_dir_all(directory).unwrap();
+}
+
+#[test]
+fn selected_delivery_profile_appends_reconciles_and_acknowledges_without_disclosure() {
+    let directory = unique("delivery-ledger");
+    let socket = unique("delivery.sock");
+    let stream = StreamIdV1([5; 16]);
+    let mut daemon = spawn(
+        "create",
+        &directory,
+        &socket,
+        &["delivery", "05050505050505050505050505050505"],
+    );
+    let mut connection = connect_when_ready(&mut daemon, &socket);
+    decode_ready(&frame(&mut connection), LimitsV1::default()).unwrap();
+    assert_eq!(
+        send(
+            &mut connection,
+            &CommandV1::Append {
+                stream,
+                expected_predecessor: None,
+                envelope: ProtocolEnvelopeV1 {
+                    producer: ProducerIdV1([1; 16]),
+                    schema: SchemaIdV1([2; 16]),
+                    idempotency_key: IdempotencyKeyV1([3; 16]),
+                    correlation: CorrelationIdV1([4; 16]),
+                    causation: None,
+                    payload: vec![1, 0, 0, 0, 0, 0, 0, 0, 7, 1],
+                },
+            },
+        ),
+        ReplyV1::Accepted(OutcomeV1::Append(AppendOutcomeV1::Appended(
+            EventSequenceV1(0)
+        )))
+    );
+    assert_eq!(
+        send(
+            &mut connection,
+            &CommandV1::Cursor {
+                consumer: ConsumerIdV1([6; 16]),
+                stream,
+            },
+        ),
+        ReplyV1::Accepted(OutcomeV1::Cursor(None))
+    );
+    assert_eq!(
+        send(
+            &mut connection,
+            &CommandV1::Read {
+                stream,
+                start: EventSequenceV1(0),
+                limit: 1,
+            },
+        ),
+        ReplyV1::Refused(RefusalV1::NotAuthorized)
+    );
+    assert_eq!(
+        send(
+            &mut connection,
+            &CommandV1::Compact {
+                stream,
+                through: EventSequenceV1(0),
+            },
+        ),
+        ReplyV1::Refused(RefusalV1::NotAuthorized)
+    );
+    assert!(matches!(
+        send(
+            &mut connection,
+            &CommandV1::Acknowledge {
+                consumer: ConsumerIdV1([6; 16]),
+                stream,
+                through: EventSequenceV1(0),
+            },
+        ),
+        ReplyV1::Accepted(OutcomeV1::Acknowledged(cursor))
+            if cursor.next_sequence == EventSequenceV1(1)
+    ));
+    assert_eq!(
+        send(
+            &mut connection,
+            &CommandV1::Append {
+                stream: StreamIdV1([9; 16]),
+                expected_predecessor: None,
+                envelope: ProtocolEnvelopeV1 {
+                    producer: ProducerIdV1([1; 16]),
+                    schema: SchemaIdV1([2; 16]),
+                    idempotency_key: IdempotencyKeyV1([8; 16]),
+                    correlation: CorrelationIdV1([4; 16]),
+                    causation: None,
+                    payload: vec![1],
+                },
+            },
+        ),
+        ReplyV1::Refused(RefusalV1::NotAuthorized)
+    );
+    drop(connection);
+    stop(daemon);
     assert!(!socket.exists());
     fs::remove_dir_all(directory).unwrap();
 }

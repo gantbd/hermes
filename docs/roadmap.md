@@ -41,6 +41,10 @@
   create-versus-recover mode, exact OS peer mapping, signal-driven drain and
   real process qualification. Operator authority is bound to one exact stream
   for read/observe/acknowledge/compact; append remains producer-owned.
+- [Implemented] Exact-stream delivery daemon profile with append,
+  cursor-observation and acknowledgement only. Cursor observation is a distinct
+  service authorization action, so this profile cannot read payloads, compact,
+  observe other streams or acquire service-wide authority.
 - [Qualified across independent service processes] Public-client Aegis
   authorization adapter with exact action/resource mapping, live grant issuance,
   append allowance and wrong-action denial through both public daemons.

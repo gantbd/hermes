@@ -7,6 +7,10 @@ Semantic Versioning once a public distribution contract is selected.
 
 ### Added
 
+- Added an exact-stream `delivery` daemon profile and split cursor observation
+  from payload read authorization. The profile permits only append, cursor
+  reconciliation, and acknowledgement; it denies disclosure, compaction,
+  other-stream access, and service-wide observation.
 - Added a lockfile-bound RustSec advisory attestation and live CI advisory gate.
 - Added `hermes-unix-peer`, a bounded OS effective-UID/GID authenticator with
   exact subject mapping, redacted diagnostics and real-daemon unknown-peer
