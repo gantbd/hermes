@@ -54,6 +54,11 @@ by standalone and Workbench shells. Presentation does not own disclosure,
 acknowledgement, or compaction semantics.
 `hermes-wire` carries every command, outcome and refusal in a canonical bounded
 frame and validates event counts and payload lengths before allocation.
+`hermes-local-client` owns the reusable service-free Unix connection, framing,
+negotiated request limits, and pre-dispatch versus outcome-unknown
+classification. Standalone presentation, Workbench, and adapters may reuse it
+without importing Hermes's service, daemon, storage, credential, or lifecycle
+implementations.
 `hermes-local-daemon` adds a private mode-`0600` Unix connection profile with one
 volatile authenticated session per connection, finite frame/request ceilings,
 I/O deadlines, content-free health, truthful outcome-unknown classification and

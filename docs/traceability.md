@@ -65,6 +65,14 @@ bounded and omit payloads, subjects, producer keys and consumer identities.
 
 ## Private local daemon
 
+`hermes-local-client` is the engine-owned, service-free public transport client.
+It depends only on Hermes's public client/protocol/wire crates and owns Unix
+connection setup, negotiated frame/request limits, framing, and not-sent versus
+outcome-unknown classification. Its enforced dependency closure excludes the
+ledger, host, service, daemon, storage, credential mapping, Keystone, and all
+presentation packages. The former `hermes-tui-local-client` package is now only
+a source-compatible re-export for presentation callers.
+
 `hermes-local-daemon` authenticates each connection into one bounded volatile
 service session, advertises canonical frame/request ceilings, applies finite I/O
 deadlines and removes only the socket inode it created. Connection tests separate

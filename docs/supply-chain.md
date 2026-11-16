@@ -13,6 +13,8 @@ those packages occur in the lock only because its integration test runs a real
 public Aegis service.
 The selected `hermes-unix-peer` adapter adds the pinned `nix` graph solely for
 safe OS peer-credential retrieval; its direct dependency closure is enforced.
+The engine-owned `hermes-local-client` adds no third-party component and has an
+enforced public client/protocol/wire-only production closure.
 
 The separately locked `qualification/aegis-process-authorization` workspace
 contains 27 packages and may depend on Aegis service/local implementation only as

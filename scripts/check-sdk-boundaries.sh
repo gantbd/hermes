@@ -52,6 +52,19 @@ done
 
 echo 'Hermes command guards public-client closure verified'
 
+local_client=$(cargo tree -p hermes-local-client --edges normal --depth 1 --locked --offline)
+if [[ $(printf '%s\n' "$local_client" | wc -l | tr -d ' ') != 4 ]] \
+  || ! printf '%s\n' "$local_client" | rg -q 'hermes-client' \
+  || ! printf '%s\n' "$local_client" | rg -q 'hermes-protocol' \
+  || ! printf '%s\n' "$local_client" | rg -q 'hermes-wire' \
+  || printf '%s\n' "$local_client" | rg -q 'hermes-(ledger|host|service|local-daemon)|keystone|ratatui|crossterm'; then
+  printf '%s\n' "$local_client" >&2
+  echo 'Hermes local client escaped its public transport closure' >&2
+  exit 1
+fi
+
+echo 'Hermes local client public transport closure verified'
+
 peer=$(cargo tree -p hermes-unix-peer --edges normal --depth 1 --locked --offline)
 if [[ $(printf '%s\n' "$peer" | wc -l | tr -d ' ') != 4 ]] \
   || ! printf '%s\n' "$peer" | rg -q 'hermes-local-daemon' \

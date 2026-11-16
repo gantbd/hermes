@@ -1,0 +1,19 @@
+[package]
+name = "hermes-local-client"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.95"
+license = "MIT OR Apache-2.0"
+publish = false
+description = "Service-free public Unix client for the selected Hermes local daemon"
+
+[dependencies]
+hermes-client = { version = "=0.1.0", path = "../hermes-client" }
+hermes-protocol = { version = "=0.1.0", path = "../hermes-protocol" }
+hermes-wire = { version = "=0.1.0", path = "../hermes-wire" }
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+all = "warn"

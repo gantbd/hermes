@@ -8,6 +8,7 @@ package|crates/hermes-client/Cargo.toml|hermes-client|0.1.0
 package|crates/hermes-consumer-command/Cargo.toml|hermes-consumer-command|0.1.0
 package|crates/hermes-conformance/Cargo.toml|hermes-conformance|0.1.0
 package|crates/hermes-disclosure-command/Cargo.toml|hermes-disclosure-command|0.1.0
+package|crates/hermes-local-client/Cargo.toml|hermes-local-client|0.1.0
 package|crates/hermes-local-daemon/Cargo.toml|hermes-local-daemon|0.1.0
 package|crates/hermes-operator-command/Cargo.toml|hermes-operator-command|0.1.0
 package|crates/hermes-protocol/Cargo.toml|hermes-protocol|0.1.0

@@ -21,5 +21,5 @@ while IFS='|' read -r kind fixture digest; do
   [[ "$actual_digest" == "$digest" ]] || { echo "Hermes compatibility fixture drifted: $fixture" >&2; exit 1; }
 done < "$baseline"
 cargo metadata --no-deps --format-version 1 --locked --offline >/dev/null
-echo 'Hermes compatibility baseline closes over 17 packages and canonical empty/live checkpoints'
+echo 'Hermes compatibility baseline closes over 18 packages and canonical empty/live checkpoints'
 

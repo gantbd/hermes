@@ -15,6 +15,7 @@ component|hermes-disclosure-command|0.1.0
 component|hermes-host|0.0.1
 component|hermes-ledger|0.0.1
 component|hermes-local|0.0.1
+component|hermes-local-client|0.1.0
 component|hermes-local-daemon|0.1.0
 component|hermes-operator-command|0.1.0
 component|hermes-protocol|0.1.0
