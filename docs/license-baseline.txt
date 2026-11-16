@@ -34,7 +34,7 @@ license|libc|0.2.189|MIT OR Apache-2.0
 license|linux-raw-sys|0.12.1|Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT
 license|memoffset|0.9.1|MIT
 license|nix|0.29.0|MIT
-license|rustix|1.1.4|Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT
+license|rustix|1.1.6|Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT
 license|signal-hook|0.3.18|Apache-2.0/MIT
 license|signal-hook-registry|1.4.8|MIT OR Apache-2.0
 license|windows-link|0.2.1|MIT OR Apache-2.0

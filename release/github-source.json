@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "channel": "github-coordinated-source",
+  "hermesRepository": "https://github.com/gantbd/hermes",
+  "remoteReachabilityQualified": false,
+  "keystone": {
+    "repository": "https://github.com/gantbd/keystone",
+    "revision": "2e4faf10ec0a70805aa1db1555f93c77fcf0a1e4",
+    "relativePath": "../keystone"
+  },
+  "aegis": {
+    "repository": "https://github.com/gantbd/aegis",
+    "revision": "ab5ea9d2af1027656958d9c3429d01b5291c1084",
+    "relativePath": "../aegis"
+  },
+  "publishing": {
+    "cratesIo": "none",
+    "binaries": "none",
+    "signing": "none"
+  }
+}

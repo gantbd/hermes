@@ -20,7 +20,7 @@ sed 's/license|hermes-ledger|0.0.1|MIT OR Apache-2.0/license|hermes-ledger|0.0.1
 if HERMES_LICENSE_BASELINE="$task_dir/licenses.txt" bash scripts/check-supply-chain.sh >"$task_dir/output" 2>&1; then
   echo 'Hermes supply gate accepted a license-expression mutant' >&2; exit 1
 fi
-sed 's/be817917/ce817917/' docs/advisory-attestation.md > "$task_dir/advisory.md"
+awk '/^lockfile-sha256:/ {$0="lockfile-sha256: 0000000000000000000000000000000000000000000000000000000000000000"} {print}' docs/advisory-attestation.md > "$task_dir/advisory.md"
 if HERMES_ADVISORY_ATTESTATION="$task_dir/advisory.md" bash scripts/check-advisory-attestation.sh >"$task_dir/output" 2>&1; then
   echo 'Hermes advisory gate accepted a lockfile-digest mutant' >&2; exit 1
 fi

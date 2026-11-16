@@ -3,12 +3,12 @@
 Status: clean root-lockfile audit against a pinned current RustSec database;
 not an SBOM, source review or legal opinion.
 
-audited-at-utc: 2026-11-16T07:13:08Z
+audited-at-utc: 2026-11-16T22:18:04Z
 cargo-audit-version: 0.23.0
-advisory-database-commit: 28d73fc95e5972af3403225a217def57dcaba3c4
-advisory-database-commit-date: 2026-11-10T14:45:03+01:00
-advisory-count: 1446
-lockfile-sha256: be81791731f71fbc52e1a9cf9af19bdff50e9bf58e97fb2163f1fb0ff078a071
+advisory-database-commit: 02e2517f457a359fc6d3440ea4560c8ea188fee8
+advisory-database-commit-date: 2026-11-15T10:59:21+01:00
+advisory-count: 1509
+lockfile-sha256: 845694efdcecc80107e2f2723a111ab7b7b2ee341654cf8a53223d31bce0473c
 dependency-count: 41
 vulnerability-count: 0
 warning-count: 0

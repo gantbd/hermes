@@ -5,6 +5,13 @@ Semantic Versioning once a public distribution contract is selected.
 
 ## [Unreleased]
 
+### Changed
+
+- Prepared coordinated public GitHub source distribution with exact Keystone
+  and Aegis revisions.
+- Updated the locked `rustix` dependency to address RUSTSEC-2026-0486 and
+  refreshed the standalone Aegis process-authorization profile.
+
 ### Added
 
 - Added an exact-stream `delivery` daemon profile and split cursor observation
