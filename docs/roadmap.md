@@ -60,24 +60,28 @@
 
 ## Phase 4 — reusable ledger surface and standalone CLI
 
-- Define `hermes-tui` as a composable presentation over Hermes's public client.
+- [Qualified] Define `hermes-tui` as a composable presentation over Hermes's public client.
   It owns bounded stream, cursor, backlog, gap, and confirmation projection, but
   no terminal lifecycle, argument parsing, daemon startup, global shortcuts, or
   process exit.
-- [Partial] Provide a separate Hermes CLI/application composition root. The
+- [Qualified for the selected local profile] Provide a separate Hermes
+  CLI/application composition root. The
   explicit observer/operator durable daemon is now owner-supplied; the sibling
   presentation CLI supplies observation and invokes Hermes-owned exact-confirmed
   bounded disclosure, acknowledgement and compaction guards. Guarded append
   remains a producer-specific integration concern.
 - [Implemented] Keep disclosure, consumer and operator guards under Hermes
   ownership; presentation packages contain no ledger command semantics.
-- Let Workbench reuse the same TUI and optionally host Hermes's service runtime
-  beneath one executable and lifecycle. Hermes retains ledger, cursor,
-  compaction, retention, authorization, and uncertainty authority. Normal
-  Workbench linkage remains blocked until Chronos and Hermes resolve one
-  immutable `keystone-storage` source identity; do not hide that with a
-  qualification-only Cargo patch.
-- Qualify standalone interactive/headless and Workbench interactive/headless
-  paths against the same replay, cursor, gap, compaction, recovery, and
-  truthful-reply-loss laws.
+- [Qualified for the selected local profile] Let Workbench reuse the same TUI
+  and supervise Hermes's sovereign observer/operator daemon beneath one product
+  lifecycle. Hermes retains ledger, cursor, compaction, retention,
+  authorization, and uncertainty authority. The selected process boundary does
+  not merge Hermes's Cargo source graph with Chronos and therefore creates no
+  architecture-driven Keystone source-convergence requirement.
+- [Qualified for the selected observation/operator profile] Standalone
+  interactive/headless and Workbench interactive/headless paths reuse the same
+  public clients, presentation component, exact-confirmed disclosure,
+  acknowledgement and compaction guards, durable create/reopen, and clean
+  signal drain. Producer-specific append integrations remain separate adapter
+  work rather than Workbench authority.
 

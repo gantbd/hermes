@@ -81,6 +81,12 @@ observer grants read and observation. The operator grants read, observation,
 acknowledgement and compaction only for its selected stream; append remains
 denied and producer-owned. Signal shutdown wakes the accept loop without
 creating a session or dispatching work.
+The same exact daemon is qualified as a Workbench-supervised sovereign process
+in headless and interactive modes. Workbench attaches the ordinary public
+clients and reuses Hermes-owned disclosure, acknowledgement, and compaction
+guards; it does not link the ledger/store implementation or acquire producer
+append authority. This process-separated topology also avoids merging Hermes's
+Keystone source graph with native Workbench peers.
 
 See [requirements](requirements.md), [specification](specification.md), and the
 [focused roadmap](docs/roadmap.md). The staged production program is tracked in

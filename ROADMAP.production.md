@@ -92,6 +92,10 @@ Exit: H5 gap visibility is satisfied by executable model and recovery evidence.
 - [x] Add private local transport and selected observer/operator daemon with
   bounded frames, deadlines, lifetime ownership, health/readiness, exact-stream
   acknowledgement/compaction authority and truthful transmission uncertainty.
+- [x] Qualify that exact sovereign daemon under Workbench supervision in
+  headless and interactive modes using the same public clients and Hermes-owned
+  command guards, with durable create/reopen and clean signal drain. Workbench
+  receives only opaque owner configuration and lifecycle receipts.
 - [x] Preserve embedded/remote append/read/ack/compact/gap parity, exact append
   replay after reopen and explicit replay-history loss after compaction.
 - [x] Add content-safe backlog, retained-edge, stalled-cursor, byte-residence,
