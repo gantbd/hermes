@@ -31,6 +31,9 @@ jobs:
         run: rustup toolchain install 1.95.0 --profile minimal --component clippy,rustfmt
       - name: Install gate prerequisites
         run: brew install ripgrep
+      - name: Fetch locked dependencies
+        working-directory: hermes
+        run: cargo fetch --locked
       - name: Run deterministic service soak
         working-directory: hermes
         run: make soak
