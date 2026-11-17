@@ -171,6 +171,7 @@ mod unix {
                     AuthorizationResourceV1::Stream(stream) if stream == selected => matches!(
                         action,
                         AuthorizationActionV1::Read
+                            | AuthorizationActionV1::ObserveCursor
                             | AuthorizationActionV1::Acknowledge
                             | AuthorizationActionV1::Compact
                             | AuthorizationActionV1::Observe
@@ -395,6 +396,7 @@ mod unix {
             };
             for action in [
                 AuthorizationActionV1::Read,
+                AuthorizationActionV1::ObserveCursor,
                 AuthorizationActionV1::Acknowledge,
                 AuthorizationActionV1::Compact,
                 AuthorizationActionV1::Observe,
