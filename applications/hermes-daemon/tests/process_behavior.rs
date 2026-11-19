@@ -334,3 +334,127 @@ fn selected_delivery_profile_appends_reconciles_and_acknowledges_without_disclos
     assert!(!socket.exists());
     fs::remove_dir_all(directory).unwrap();
 }
+
+#[test]
+fn selected_consumer_profile_reads_and_retains_only_its_exact_stream_cursor() {
+    let directory = unique("consumer-ledger");
+    let socket = unique("consumer.sock");
+    let selected = StreamIdV1([5; 16]);
+    let consumer = ConsumerIdV1([6; 16]);
+    let mut ledger =
+        hermes_local::create_new(&directory, Limits::default(), CheckpointBudgetV1::default())
+            .unwrap();
+    ledger
+        .append(
+            StreamId::new(selected.0),
+            None,
+            EventEnvelopeV1::new(
+                ProducerId::new([1; 16]),
+                SchemaId::new([2; 16]),
+                IdempotencyKey::new([3; 16]),
+                CorrelationId::new([4; 16]),
+                None,
+                b"work-item-changed".to_vec(),
+            ),
+        )
+        .unwrap();
+    drop(ledger);
+
+    let access = ["consumer", "05050505050505050505050505050505"];
+    let mut daemon = spawn("open", &directory, &socket, &access);
+    let mut connection = connect_when_ready(&mut daemon, &socket);
+    decode_ready(&frame(&mut connection), LimitsV1::default()).unwrap();
+    assert!(matches!(
+        send(
+            &mut connection,
+            &CommandV1::Read {
+                stream: selected,
+                start: EventSequenceV1(0),
+                limit: 1,
+            },
+        ),
+        ReplyV1::Accepted(OutcomeV1::Read(events)) if events.events.len() == 1
+    ));
+    assert_eq!(
+        send(
+            &mut connection,
+            &CommandV1::Cursor {
+                consumer,
+                stream: selected,
+            },
+        ),
+        ReplyV1::Accepted(OutcomeV1::Cursor(None))
+    );
+    assert!(matches!(
+        send(
+            &mut connection,
+            &CommandV1::Acknowledge {
+                consumer,
+                stream: selected,
+                through: EventSequenceV1(0),
+            },
+        ),
+        ReplyV1::Accepted(OutcomeV1::Acknowledged(cursor))
+            if cursor.next_sequence == EventSequenceV1(1)
+    ));
+    assert_eq!(
+        send(
+            &mut connection,
+            &CommandV1::Append {
+                stream: selected,
+                expected_predecessor: Some(EventSequenceV1(0)),
+                envelope: ProtocolEnvelopeV1 {
+                    producer: ProducerIdV1([1; 16]),
+                    schema: SchemaIdV1([2; 16]),
+                    idempotency_key: IdempotencyKeyV1([8; 16]),
+                    correlation: CorrelationIdV1([4; 16]),
+                    causation: None,
+                    payload: b"denied-event".to_vec(),
+                },
+            },
+        ),
+        ReplyV1::Refused(RefusalV1::NotAuthorized)
+    );
+    assert_eq!(
+        send(
+            &mut connection,
+            &CommandV1::Compact {
+                stream: selected,
+                through: EventSequenceV1(0),
+            },
+        ),
+        ReplyV1::Refused(RefusalV1::NotAuthorized)
+    );
+    assert_eq!(
+        send(
+            &mut connection,
+            &CommandV1::Read {
+                stream: StreamIdV1([9; 16]),
+                start: EventSequenceV1(0),
+                limit: 1,
+            },
+        ),
+        ReplyV1::Refused(RefusalV1::NotAuthorized)
+    );
+    drop(connection);
+    stop(daemon);
+
+    let mut reopened = spawn("open", &directory, &socket, &access);
+    let mut connection = connect_when_ready(&mut reopened, &socket);
+    decode_ready(&frame(&mut connection), LimitsV1::default()).unwrap();
+    assert!(matches!(
+        send(
+            &mut connection,
+            &CommandV1::Cursor {
+                consumer,
+                stream: selected,
+            },
+        ),
+        ReplyV1::Accepted(OutcomeV1::Cursor(Some(cursor)))
+            if cursor.next_sequence == EventSequenceV1(1)
+    ));
+    drop(connection);
+    stop(reopened);
+    assert!(!socket.exists());
+    fs::remove_dir_all(directory).unwrap();
+}

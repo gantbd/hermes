@@ -49,6 +49,7 @@ mod unix {
         Observer,
         Operator(StreamIdV1),
         Delivery(StreamIdV1),
+        Consumer(StreamIdV1),
     }
 
     impl Config {
@@ -79,7 +80,10 @@ mod unix {
                 Some("delivery") => AccessProfile::Delivery(StreamIdV1(parse_identifier(
                     values.next().ok_or("DELIVERY_STREAM_HEX required")?,
                 )?)),
-                _ => return Err("ACCESS must be observer, operator, or delivery"),
+                Some("consumer") => AccessProfile::Consumer(StreamIdV1(parse_identifier(
+                    values.next().ok_or("CONSUMER_STREAM_HEX required")?,
+                )?)),
+                _ => return Err("ACCESS must be observer, operator, delivery, or consumer"),
             };
             if values.next().is_some() {
                 return Err("unexpected argument");
@@ -188,6 +192,16 @@ mod unix {
                     ),
                     AuthorizationResourceV1::Stream(_) => false,
                 },
+                AccessProfile::Consumer(selected) => match resource {
+                    AuthorizationResourceV1::Service => false,
+                    AuthorizationResourceV1::Stream(stream) if stream == selected => matches!(
+                        action,
+                        AuthorizationActionV1::Read
+                            | AuthorizationActionV1::ObserveCursor
+                            | AuthorizationActionV1::Acknowledge
+                    ),
+                    AuthorizationResourceV1::Stream(_) => false,
+                },
             })
         }
     }
@@ -284,7 +298,7 @@ mod unix {
 
     fn usage(message: &'static str) -> String {
         format!(
-            "{message}; usage: hermes-daemon create|open DIRECTORY SOCKET EFFECTIVE_UID EFFECTIVE_GID SUBJECT_HEX observer|operator|delivery [STREAM_HEX]"
+            "{message}; usage: hermes-daemon create|open DIRECTORY SOCKET EFFECTIVE_UID EFFECTIVE_GID SUBJECT_HEX observer|operator|delivery|consumer [STREAM_HEX]"
         )
     }
 
@@ -348,6 +362,25 @@ mod unix {
             assert_eq!(
                 delivery.access,
                 AccessProfile::Delivery(StreamIdV1([3; 16]))
+            );
+            let consumer = Config::parse(
+                [
+                    "open",
+                    "ledger",
+                    "hermes.sock",
+                    "501",
+                    "20",
+                    "01010101010101010101010101010101",
+                    "consumer",
+                    "04040404040404040404040404040404",
+                ]
+                .into_iter()
+                .map(OsString::from),
+            )
+            .unwrap();
+            assert_eq!(
+                consumer.access,
+                AccessProfile::Consumer(StreamIdV1([4; 16]))
             );
             for invalid in [
                 "0101",
@@ -479,6 +512,55 @@ mod unix {
                     .authorize(
                         [8; 16],
                         AuthorizationActionV1::Append,
+                        AuthorizationResourceV1::Stream(selected),
+                    )
+                    .unwrap()
+            );
+        }
+
+        #[test]
+        fn consumer_policy_reads_and_acknowledges_only_its_exact_stream() {
+            let selected = StreamIdV1([5; 16]);
+            let mut policy = SelectedPolicy {
+                subject: [7; 16],
+                access: AccessProfile::Consumer(selected),
+            };
+            for action in [
+                AuthorizationActionV1::Read,
+                AuthorizationActionV1::ObserveCursor,
+                AuthorizationActionV1::Acknowledge,
+            ] {
+                assert!(
+                    policy
+                        .authorize([7; 16], action, AuthorizationResourceV1::Stream(selected))
+                        .unwrap()
+                );
+            }
+            for action in [
+                AuthorizationActionV1::Append,
+                AuthorizationActionV1::Compact,
+                AuthorizationActionV1::Observe,
+            ] {
+                assert!(
+                    !policy
+                        .authorize([7; 16], action, AuthorizationResourceV1::Stream(selected))
+                        .unwrap()
+                );
+            }
+            assert!(
+                !policy
+                    .authorize(
+                        [7; 16],
+                        AuthorizationActionV1::Read,
+                        AuthorizationResourceV1::Stream(StreamIdV1([6; 16])),
+                    )
+                    .unwrap()
+            );
+            assert!(
+                !policy
+                    .authorize(
+                        [8; 16],
+                        AuthorizationActionV1::Read,
                         AuthorizationResourceV1::Stream(selected),
                     )
                     .unwrap()

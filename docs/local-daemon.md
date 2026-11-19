@@ -34,7 +34,9 @@ SUBJECT_HEX observer` and `hermes-daemon create|open DIRECTORY SOCKET
 EFFECTIVE_UID EFFECTIVE_GID SUBJECT_HEX operator OPERATOR_STREAM_HEX` are the
 general observation and operator roots. `hermes-daemon create|open DIRECTORY
 SOCKET EFFECTIVE_UID EFFECTIVE_GID SUBJECT_HEX delivery DELIVERY_STREAM_HEX`
-selects the minimized delivery root. All explicitly create or recover
+selects the minimized delivery root. `hermes-daemon create|open DIRECTORY
+SOCKET EFFECTIVE_UID EFFECTIVE_GID SUBJECT_HEX consumer CONSUMER_STREAM_HEX`
+selects the minimized consumer root. All explicitly create or recover
 the durable ledger and map one configured OS peer identity to one subject. The
 observer grants only `Read` and `Observe`. The operator grants `Read`,
 `Observe`, `Acknowledge`, and `Compact` only for the exact selected stream;
@@ -42,6 +44,11 @@ wrong-stream operations and all `Append` requests are denied. The delivery
 profile grants only `Append`, `ObserveCursor`, and `Acknowledge` for one exact
 stream. Cursor observation is deliberately distinct from payload `Read`, so
 reconciliation authority cannot disclose events or compact retention.
+The consumer profile grants only bounded `Read`, `ObserveCursor`, and
+`Acknowledge` for one exact stream. It cannot append or compact, and delivery
+is only a wake/input receipt: the consumer must re-observe the authoritative
+domain owner before acting and cannot infer a downstream effect from cursor
+advancement.
 `SIGINT`/`SIGTERM`
 set the owner stop flag and wake the blocked accept without authenticating or
 dispatching the wake connection. The process gate proves observer create/reopen

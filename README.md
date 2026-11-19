@@ -81,8 +81,9 @@ exporting payloads or identities.
 `applications/hermes-daemon` is the standalone selected local composition root.
 It uses the same wire service and OS-peer adapter, requires explicit create
 versus recover mode and one exact UID/GID-to-subject mapping, and selects an
-`observer` profile, an `operator` profile bound to one exact stream, or a
-content-minimized `delivery` profile bound to one exact stream. The
+`observer` profile, an `operator` profile bound to one exact stream, a
+content-minimized `delivery` profile bound to one exact stream, or a
+least-authority `consumer` profile bound to one exact stream. The
 observer grants read and observation. The operator grants read, observation,
 acknowledgement and compaction only for its selected stream; append remains
 denied and producer-owned. Signal shutdown wakes the accept loop without
@@ -90,6 +91,12 @@ creating a session or dispatching work.
 The delivery profile grants only append, cursor observation, and
 acknowledgement for its selected stream. It cannot disclose event payloads,
 compact retention, inspect other streams, or observe service-wide state.
+The consumer profile grants only bounded payload read, its selected-stream
+cursor observation, and acknowledgement. It cannot append, compact, inspect
+other streams, or observe service-wide state. This is the deployment profile
+for an event-triggered PM, SRE, verifier, or other worker that must freshly
+re-observe the authoritative domain owner before producing any downstream
+effect.
 The same exact daemon is qualified as a Workbench-supervised sovereign process
 in headless and interactive modes. Workbench attaches the ordinary public
 clients and reuses Hermes-owned disclosure, acknowledgement, and compaction
